@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ma liste de souhaits{% endblock %}
+
+{% block body %}
+<h1 class="text-center mt-4">Ma liste de souhaits</h1>
+
+<a href="{{ path('app_add') }}"><button type="button" class="btn btn-primary m-3">Faire un souhait</button></a>
+
+<div class="row m-3">
+  {% for wish in wishes %}
+    <div class="col card m-2" style="width: 18rem;">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">{{ wish.titre }}</h5>
+        <p class="card-text">{{ wish.description }}</p>
+        <p class="card-text">{{ wish.prix }} €</p>
+        <a href="{{ path('app_edit', {id:wish.id}) }}" class="btn btn-warning">Modifier</a>
+        <a href="{{ path('app_delete', {id:wish.id}) }}" class="btn btn-danger">Supprimer</a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

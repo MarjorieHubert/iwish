@@ -11,7 +11,11 @@
   {% for wish in wishes %}
   <div class="col">
     <div class="card m-2" style="width: 25rem;">
-      <img src="..." class="card-img-top" alt="...">
+      {% if wish.image %}
+      <img src="{{ asset('uploads/images/' ~ wish.image) }}" class="card-img-top" alt="...">
+      {% else %}
+      <p class="text-center mt-4 fw-lighter fst-italic">Aucune image sélectionnée</p>
+      {% endif %}
       <div class="card-body">
         <h5 class="card-title">{{ wish.titre }}</h5>
         <p class="card-text">{{ wish.description }}</p>

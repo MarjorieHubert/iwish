@@ -6,9 +6,11 @@ use App\Entity\Wishes;
 use App\Form\WishesFormType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class WishesController extends AbstractController
 {
@@ -26,7 +28,7 @@ class WishesController extends AbstractController
 
     //CREATE
     #[Route('wishes/add', name: 'app_add')]
-    public function add(Request $request,ManagerRegistry $doctrine): Response
+    public function add(Request $request,ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
         //On crée un nouveau souhait
         $createWish = new Wishes();
@@ -41,8 +43,29 @@ class WishesController extends AbstractController
         if($wishesForm->isSubmitted() && $wishesForm->isValid()) {
             //On récupère toutes les données du formulaire
             $wish = $wishesForm->getData();
+            //et les images
+            $images = $wishesForm->get('image')->getData();
             //On  récupère l'utilisateur qui crée le souhait
             $wish->setUser($this->getUser());
+
+            if ($images) {
+                $originalFilename = pathinfo($images->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$images->guessExtension();
+
+                // Move the file to the directory where avatars are stored
+                try {
+                    $images->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+
+                $createWish->setImage($newFilename);
+            }
 
             //On envoie en BDD
             $entityManager = $doctrine->getManager();

@@ -9,7 +9,8 @@
 
 <div class="row m-3">
   {% for wish in wishes %}
-    <div class="col card m-2" style="width: 18rem;">
+  <div class="col">
+    <div class="card m-2" style="width: 25rem;">
       <img src="..." class="card-img-top" alt="...">
       <div class="card-body">
         <h5 class="card-title">{{ wish.titre }}</h5>
@@ -17,8 +18,10 @@
         <p class="card-text">{{ wish.prix }} €</p>
         <a href="{{ path('app_edit', {id:wish.id}) }}" class="btn btn-warning">Modifier</a>
         <a href="{{ path('app_delete', {id:wish.id}) }}" class="btn btn-danger">Supprimer</a>
+        <a href={{ wish.lien }} class="btn btn-primary" target="_blank">Voir l'article</a>
       </div>
     </div>
+  </div>
   {% endfor %}
 </div>
 

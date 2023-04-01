@@ -6,7 +6,7 @@
 
 <style>
   .edit:hover, .delete:hover, .see:hover {
-    width:18%;
+    width:15%;
   }
 </style>
 
@@ -20,7 +20,11 @@
 
 <div class="row m-3">
   {% if wishes %}
+    {# On déclare une variable à 0 pour pouvoir incrémenter nos id #}
+    {% set idModal = 0 %}
     {% for wish in wishes %}
+    {# On incrémente notre variable à chaque tour de boucle #}
+    {% set idModal = idModal + 1 %}
     <div class="col">
       <div class="card m-auto mb-3" style="width: 25rem;">
         {% if wish.image %}
@@ -45,14 +49,16 @@
 
           <div class="d-flex justify-content-evenly">
             <a href="{{ path('app_edit', {id:wish.id}) }}" class="edit btn btn-warning rounded-pill"><i class="bi bi-pencil-square"></i></a>
-            <a href="#" class="delete btn btn-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-trash3-fill"></i></a>
+            {# On utilise notre variable déclarée plus haut (idModal) dans notre id pour avoir un id différent à chaque boucle #}
+            <a href="#" class="delete btn btn-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal{{idModal}}"><i class="bi bi-trash3-fill"></i></a>
             <a href={{ wish.lien }} class="see btn btn-primary rounded-pill" target="_blank"><i class="bi bi-eye-fill"></i></a>
           </div>
         </div>
       </div>
 
       {# Modale de confirmation pour la suppression #}
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      {# On utilise notre variable (idModal) dans notre id pour relier notre bouton à la modale #}
+      <div class="modal fade" id="exampleModal{{idModal}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">

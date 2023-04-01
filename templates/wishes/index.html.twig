@@ -3,30 +3,83 @@
 {% block title %}Ma liste de souhaits{% endblock %}
 
 {% block body %}
-<h1 class="text-center mt-4">Ma liste de souhaits</h1>
 
-<a href="{{ path('app_add') }}"><button type="button" class="btn btn-primary m-3">Faire un souhait</button></a>
+<style>
+  .edit:hover, .delete:hover, .see:hover {
+    width:18%;
+  }
+</style>
+
+<div style="font-family: 'Poppins', sans-serif; margin:auto; width:50%; border-bottom:2px solid black; padding-bottom:20px">
+  <h1 class="text-center mt-4">Ma liste de souhaits</h1>
+</div>
+
+<div class="text-center">
+  <a href="{{ path('app_add') }}"><button type="button" class="btn btn-primary m-4">Faire un souhait <i class="bi bi-stars"></i></button></a>
+</div>
 
 <div class="row m-3">
-  {% for wish in wishes %}
-  <div class="col">
-    <div class="card m-2" style="width: 25rem;">
-      {% if wish.image %}
-      <img src="{{ asset('uploads/images/' ~ wish.image) }}" class="card-img-top" alt="...">
-      {% else %}
-      <p class="text-center mt-4 fw-lighter fst-italic">Aucune image sélectionnée</p>
-      {% endif %}
-      <div class="card-body">
-        <h5 class="card-title">{{ wish.titre }}</h5>
-        <p class="card-text">{{ wish.description }}</p>
-        <p class="card-text">{{ wish.prix }} €</p>
-        <a href="{{ path('app_edit', {id:wish.id}) }}" class="btn btn-warning">Modifier</a>
-        <a href="{{ path('app_delete', {id:wish.id}) }}" class="btn btn-danger">Supprimer</a>
-        <a href={{ wish.lien }} class="btn btn-primary" target="_blank">Voir l'article</a>
+  {% if wishes %}
+    {% for wish in wishes %}
+    <div class="col">
+      <div class="card m-auto mb-3" style="width: 25rem;">
+        {% if wish.image %}
+        <img src="{{ asset('uploads/images/' ~ wish.image) }}" class="card-img-top" alt="...">
+        {% else %}
+        <p class="text-center mt-4 fw-lighter fst-italic">Aucune image sélectionnée</p>
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ wish.titre }}</h5>
+
+          {% if wish.description %}
+          <p class="card-text">{{ wish.description }}</p>
+          {% else %}
+          <p class="text-center mt-4 fw-lighter fst-italic">Aucune description</p>
+          {% endif %}
+
+          {% if wish.prix %}
+          <p class="card-text">{{ wish.prix }} €</p>
+          {% else %}
+          <p class="text-center mt-4 fw-lighter fst-italic">Aucun prix mentionné</p>
+          {% endif %}
+
+          <div class="d-flex justify-content-evenly">
+            <a href="{{ path('app_edit', {id:wish.id}) }}" class="edit btn btn-warning rounded-pill"><i class="bi bi-pencil-square"></i></a>
+            <a href="#" class="delete btn btn-danger rounded-pill" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-trash3-fill"></i></a>
+            <a href={{ wish.lien }} class="see btn btn-primary rounded-pill" target="_blank"><i class="bi bi-eye-fill"></i></a>
+          </div>
+        </div>
+      </div>
+
+      {# Modale de confirmation pour la suppression #}
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Supprimer mon souhait</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Etes-vous sûr(e) de vouloir supprimer ce souhait?</p>
+              <p class="fw-lighter fst-italic">Cette action est définitive.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+              <a href="{{ path('app_delete', {id:wish.id}) }}"><button type="button" class="btn btn-primary">Confirmer la suppression</button></a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    {% endfor %}
+
+  {# Affichage si aucun souhait effectué #}
+  {% else %}
+  <div class="text-center mt-5">
+    <p>Oups, c'est bien vide ici!</p>
+    <p><i class="bi bi-arrow-up"></i> Faites votre premier souhait ci dessus <i class="bi bi-arrow-up"></i></p>
   </div>
-  {% endfor %}
+  {% endif %}
 </div>
 
 {% endblock %}

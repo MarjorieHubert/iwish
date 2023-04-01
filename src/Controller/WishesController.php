@@ -83,7 +83,7 @@ class WishesController extends AbstractController
 
     //UPDATE
     #[Route('wishes/edit/{id}', name: 'app_edit')]
-    public function edit(Wishes $createWish, Request $request,ManagerRegistry $doctrine): Response
+    public function edit(Wishes $createWish, Request $request,ManagerRegistry $doctrine, SluggerInterface $slugger): Response
     {
         //On crée le formulaire
         $wishesForm = $this->createForm(WishesFormType::class, $createWish);
@@ -95,8 +95,28 @@ class WishesController extends AbstractController
         if($wishesForm->isSubmitted() && $wishesForm->isValid()) {
             //On récupère toutes les données du formulaire
             $wish = $wishesForm->getData();
+            $images = $wishesForm->get('image')->getData();
             //On  récupère l'utilisateur qui crée le souhait
             $wish->setUser($this->getUser());
+
+            if ($images) {
+                $originalFilename = pathinfo($images->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$images->guessExtension();
+
+                // Move the file to the directory where avatars are stored
+                try {
+                    $images->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+
+                $createWish->setImage($newFilename);
+            }
 
             //On envoie en BDD
             $entityManager = $doctrine->getManager();

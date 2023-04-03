@@ -93,8 +93,24 @@ class WishesController extends AbstractController
 
         //On vérifie si le formulaire est soumis ET valide
         if($wishesForm->isSubmitted() && $wishesForm->isValid()) {
+
+            //On récupère l'image actuelle
+            $images = $createWish->getImage();
+            //Si la nouvelle image (que l'on récupère du nouveau formulaire : $wishesForm->get('image')->getData()) est différente de la nouvelle image ($images)
+            if ($wishesForm->get('image')->getData()!=$images) {
+                //On récu^ère le nom complet de l'image
+                $nomImage = $this->getParameter("images_directory") . '/' . $images;
+                //Si l'image existe
+                if(file_exists($nomImage)) {
+                    //on la supprime
+                    unlink($nomImage);
+                }
+            }
+
+
             //On récupère toutes les données du formulaire
             $wish = $wishesForm->getData();
+            
             $images = $wishesForm->get('image')->getData();
             //On  récupère l'utilisateur qui crée le souhait
             $wish->setUser($this->getUser());
@@ -135,6 +151,13 @@ class WishesController extends AbstractController
     #[Route('wishes/delete/{id}', name: 'app_delete')]
     public function delete(Wishes $createWish, ManagerRegistry $doctrine): Response
     {
+        //Supprimer l'image du dossier uploads quand on supprime un souhait
+        $images = $createWish->getImage();
+        $nomImage = $this->getParameter("images_directory") . '/' . $images;
+        if(file_exists($nomImage)) {
+            unlink($nomImage);
+        }
+
         $entityManager = $doctrine->getManager();
         $entityManager->remove($createWish);
         $entityManager->flush();

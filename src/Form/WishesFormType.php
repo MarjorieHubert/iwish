@@ -33,7 +33,7 @@ class WishesFormType extends AbstractType
                             'image/jpeg',
                             'image/png',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid image (jpeg or png)',
+                        'mimeTypesMessage' => 'Merci de charger une image valide (jpeg ou png)',
                     ])
                 ],
             ])
